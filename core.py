@@ -19,6 +19,7 @@ def setup_chrome_driver():
     options.add_argument('--disable-gpu')   # 關閉 GPU 加速，避免在部分環境下造成錯誤
     options.add_argument('--no-sandbox')    # 解除沙盒限制（Linux/Docker 無權限環境必加）
     options.add_argument('--disable-dev-shm-usage')  # 避免 /dev/shm 空間不足導致崩潰（Docker 常見）
+    options.add_argument("--disable-software-rasterizer")  # 關閉軟體光柵化，提升效能
     options.add_argument('--window-size=1920,1080')  # 指定視窗大小，確保頁面元素完整載入可見
 
     # --- 日誌與自動化提示設定 ---
