@@ -1,3 +1,16 @@
-selenium
-Flask
-gunicorn
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1  # Flask 依賴
+gunicorn==21.2.0  # 生產環境 WSGI server
+Jinja2==3.1.2    # Flask 模板引擎
+
+# Selenium & WebDriver
+selenium>=4.6.0   # 使用內建的 Selenium Manager
+urllib3==2.0.7    # selenium 依賴
+
+# Logging & Utils
+python-dotenv==1.0.0  # 環境變數管理
+logging==0.4.9.6     # 基礎日誌功能
+
+# Testing (Optional)
+pytest==7.4.3        # 如果需要單元測試
