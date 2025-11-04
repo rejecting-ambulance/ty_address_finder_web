@@ -2,6 +2,7 @@
 from flask import Flask, request, jsonify, render_template
 import logging
 import os
+import atexit
 from core import (
     setup_chrome_driver,
     search_address,
@@ -30,7 +31,7 @@ try:
     _driver_instance = None
     _wait_instance = None
     # 不在 import 時立即初始化 driver，改為 lazy 初始化
-    _driver_instance, _wait_instance = setup_chrome_driver()
+    #_driver_instance, _wait_instance = setup_chrome_driver()
 except Exception as e:
     logging.error(f"Failed to setup Chrome driver on app startup: {e}")
 
@@ -43,12 +44,21 @@ def index():
     return render_template('index.html')
 
 
-
 @app.route('/search_address_api', methods=['GET'])
 def api_search_address():
     """
     API 端點，接收地址查詢並返回格式化後的結果。
     """
+    '''
+    待處理錯誤地址
+    input = error test case
+    1，too short>OK
+    義民路10000號>OK
+    中壢屈舊明里義民路10000號 not OK
+    舊明里義民路120   not OK
+    中壢義民路120號   nit OK
+    '''
+
     global _driver_instance, _wait_instance
 
     address_query = request.args.get('address', '').strip()
@@ -106,15 +116,6 @@ def api_search_address():
         logging.error(f"Error processing address '{address_query}': {e}", exc_info=True)
         return jsonify({"error": f"處理地址時發生錯誤: {e}"}), 500
 
-'''
-input = error test case
-1，too short>OK
-義民路10000號>OK
-中壢屈舊明里義民路10000號 not OK
-舊明里義民路120   not OK
-中壢義民路120號   nit OK
-'''
-
 
 @app.route('/_health')
 def health_check():
@@ -127,23 +128,6 @@ def health_check():
             return jsonify({"status": "unhealthy"}), 500
     return jsonify({"status": "initializing"}), 503
 
-# Cloud Run 會使用 PORT 環境變數來決定服務監聽的端口
-if __name__ == '__main__':
-    # 在本地開發環境運行時使用，Cloud Run 會透過 Gunicorn 啟動
-    app.run(host='0.0.0.0', port=8080)
-
-# 在 app.py 中添加
-import atexit
-
-def cleanup():
-    global _driver_instance
-    if _driver_instance:
-        try:
-            _driver_instance.quit()
-        except:
-            pass
-
-atexit.register(cleanup)
 
 # 新增：在每個 worker 第一次請求前初始化一次（更安全於 Gunicorn）
 @app.before_first_request
@@ -156,3 +140,22 @@ def initialize_driver():
         logging.info("WebDriver initialized in worker.")
     except Exception as e:
         logging.error(f"Failed to initialize WebDriver in worker: {e}")
+
+
+# import atexit
+def cleanup():
+    global _driver_instance
+    if _driver_instance:
+        try:
+            _driver_instance.quit()
+        except:
+            pass
+
+atexit.register(cleanup)
+
+
+# Cloud Run 會使用 PORT 環境變數來決定服務監聽的端口
+if __name__ == '__main__':
+    # 在本地開發環境運行時使用，Cloud Run 會透過 Gunicorn 啟動
+    app.run(host='0.0.0.0', port=8080)
+
