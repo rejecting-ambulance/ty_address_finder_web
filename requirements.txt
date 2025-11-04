@@ -10,7 +10,7 @@ urllib3==2.0.7    # selenium 依賴
 
 # Logging & Utils
 python-dotenv==1.0.0  # 環境變數管理
-logging==0.4.9.6     # 基礎日誌功能
+# logging (built-in)
 
 # Testing (Optional)
 pytest==7.4.3        # 如果需要單元測試
