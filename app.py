@@ -51,12 +51,12 @@ def api_search_address():
     """
     '''
     待處理錯誤地址
-    input = error test case
     1，too short>OK
     義民路10000號>OK
     中壢屈舊明里義民路10000號 not OK
     舊明里義民路120   not OK
-    中壢義民路120號   nit OK
+    中壢義民路120號   not OK
+    縣府路 not OK(太短無法查詢)
     '''
 
     global _driver_instance, _wait_instance
@@ -130,7 +130,7 @@ def health_check():
 
 
 # 新增：在每個 worker 第一次請求前初始化一次（更安全於 Gunicorn）
-@app.before_first_request
+@app.before_request
 def initialize_driver():
     global _driver_instance, _wait_instance
     if _driver_instance and getattr(_driver_instance, "session_id", None):
