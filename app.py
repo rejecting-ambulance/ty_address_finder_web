@@ -3,6 +3,10 @@ from flask import Flask, request, jsonify, render_template
 import logging
 import os
 import atexit
+import time
+import requests
+import threading
+
 from core import (
     setup_chrome_driver,
     search_address,
@@ -142,6 +146,27 @@ def initialize_driver():
         logging.error(f"Failed to initialize WebDriver in worker: {e}")
 
 
+@app.route('/ping')
+def ping():
+    return "pong"
+
+def keep_alive():
+    """定期 ping 自己以防止冷啟動"""
+    session = requests.Session()
+    port = os.getenv("PORT", "8080")
+    url = os.getenv("SELF_URL", f"http://localhost:{port}/ping")
+    interval = int(os.getenv("KEEPALIVE_INTERVAL", "30"))
+
+    while True:
+        try:
+            r = session.get(url, timeout=5)
+            logging.info(f"[KeepAlive] Pinged {url} ({r.status_code})")
+        except Exception as e:
+            logging.warning(f"[KeepAlive] Error: {e}")
+        time.sleep(interval)
+
+
+
 # import atexit
 def cleanup():
     global _driver_instance
@@ -156,6 +181,10 @@ atexit.register(cleanup)
 
 # Cloud Run 會使用 PORT 環境變數來決定服務監聽的端口
 if __name__ == '__main__':
+
+    # 啟動防冷啟動的背景執行緒
+    threading.Thread(target=keep_alive, daemon=True).start()
+
     # 在本地開發環境運行時使用，Cloud Run 會透過 Gunicorn 啟動
     app.run(host='0.0.0.0', port=8080)
 

@@ -10,7 +10,7 @@ WORKDIR /app
 
 # 安裝系統依賴
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates wget unzip fonts-noto-cjk \
+    ca-certificates wget unzip fonts-noto-cjk \ 
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libgbm1 libgtk-3-0 \
     libx11-6 libxcomposite1 libxdamage1 libxrandr2 libasound2 libxtst6 libxss1 \
     libpangocairo-1.0-0 libcairo2 \
