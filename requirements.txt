@@ -1,16 +1,12 @@
-# Web Framework
+# Web framework / server
 Flask==3.0.0
-Werkzeug==3.0.1  # Flask 依賴
-gunicorn==21.2.0  # 生產環境 WSGI server
-Jinja2==3.1.2    # Flask 模板引擎
+gunicorn==21.2.0
 
-# Selenium & WebDriver
-selenium>=4.6.0   # 使用內建的 Selenium Manager
-urllib3==2.0.7    # selenium 依賴
+# Selenium for browser automation (Selenium Manager available in >=4.6.0)
+selenium>=4.6.0
 
-# Logging & Utils
-python-dotenv==1.0.0  # 環境變數管理
-# logging (built-in)
+# HTTP client used in app.py
+requests>=2.31.0
 
-# Testing (Optional)
-pytest==7.4.3        # 如果需要單元測試
+# Optional: testing
+pytest==7.4.3
