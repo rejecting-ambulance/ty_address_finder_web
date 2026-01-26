@@ -12,7 +12,11 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
 def setup_chrome_driver():
+    chrome_bin = os.getenv("CHROME_BIN", "/opt/chrome/chrome")
+    chromedriver_path = "/usr/local/bin/chromedriver"
+    
     options = Options()
+    options.binary_location = chrome_bin
 
     # --- Headless 模式設定 ---
     options.add_argument('--headless=new')  # 啟用新版無頭模式，模擬真實瀏覽器但不開視窗
@@ -22,6 +26,9 @@ def setup_chrome_driver():
     options.add_argument("--disable-software-rasterizer")  # 關閉軟體光柵化，提升效能
     options.add_argument('--window-size=1920,1080')  # 指定視窗大小，確保頁面元素完整載入可見
 
+    service = Service(chromedriver_path)
+
+    
     # --- 日誌與自動化提示設定 ---
     # 排除特定開關，以隱藏「Chrome 正在受自動化控制」提示及多餘的 console log
     options.add_experimental_option(
@@ -44,7 +51,7 @@ def setup_chrome_driver():
     logging.getLogger('urllib3').setLevel(logging.WARNING)
 
     # 建立 WebDriver 物件
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=service, options=options)
     wait = WebDriverWait(driver, 20)  # 設置等待時間為20秒
     return driver, wait
 
